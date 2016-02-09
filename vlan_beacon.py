@@ -47,6 +47,6 @@ class VlanBeacon(threading.Thread):
         udp = ip.child()
         assert(udp.get_uh_dport(), BEACON_UDP_PORT)
         payload = udp.child()
-        print payload
+        print payload.get_buffer_as_string()
         if eth.tag_cnt > 0:
             print "vlan %d" % eth.get_tag(0).get_vid()

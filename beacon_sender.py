@@ -21,9 +21,7 @@ class BeaconSender (threading.Thread):
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
         assert(self._interface in netifaces.interfaces())
-        ipv4_addr = netifaces.ifaddresses(self._interface)[netifaces.AF_INET]["addr"]
-        sock.bind(ipv4_addr)
-        bcast_addr = netifaces.ifaddresses(self._interface)[netifaces.AF_INET]["broadcast"]
+        bcast_addr = netifaces.ifaddresses(self._interface)[netifaces.AF_INET][0]["broadcast"]
 
         while not self.quit:
             try:
