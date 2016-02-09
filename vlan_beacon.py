@@ -1,6 +1,7 @@
 import pcapy
 import threading
 import datetime
+import json
 from impacket.ImpactDecoder import EthDecoder
 from impacket import ImpactPacket
 
@@ -37,8 +38,9 @@ class VlanBeacon(threading.Thread):
             udp = ip.child()
             assert(udp.get_uh_dport(), self._port)
             payload = udp.child()
-            if payload.get_buffer_as_string() == 'abc':
-                print 'received beacon from %s' %  ip.get_ip_src()
+            payload_dict = json.loads(payload.get_buffer_as_string())
+            if "key" in payload_dict.keys() and payload_dict["key"] == 'abc':
+                print 'received beacon from %s cluster id %s' %  (ip.get_ip_src(), payload_dict["cluster-id"])
                 if eth.tag_cnt > 0:
                     print "vlan %d" % eth.get_tag(0).get_vid()
 
