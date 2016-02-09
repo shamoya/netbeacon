@@ -2,8 +2,10 @@ import socket
 import threading
 import netifaces
 import time
+import json
 
 ###########################################################################
+CLUSTER_ID = 1234567
 ###########################################################################
 
 class BeaconSender (threading.Thread):
@@ -22,14 +24,18 @@ class BeaconSender (threading.Thread):
         sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
         assert(self._interface in netifaces.interfaces())
         bcast_addr = netifaces.ifaddresses(self._interface)[netifaces.AF_INET][0]["broadcast"]
+        data = dict()
+        data['key'] = self._key
+        data['cluster-id'] = CLUSTER_ID
+        data_string = json.dumps(data)
 
         while not self.quit:
             try:
-                sock.sendto(self._key, (bcast_addr, self._port))
+                sock.sendto(data_string, (bcast_addr, self._port))
                 
-            except socket.error as exc:
+            except socket.error:
                 print "Socket error ... continuing anyway"
                 continue
             
-            time.sleep(1)
+            time.sleep(2)
         sock.close()
